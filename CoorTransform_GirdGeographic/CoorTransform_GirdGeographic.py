@@ -75,14 +75,18 @@ class CoorTransformer_GridAndGeographic:
 		accuracy = pow(10, -accuracy)
 		M = 0
 		
-		while abs(M - Mp) > accuracy:
-			Lat_p = (Lat_max + Lat_min) / 2
-			M = self.MeridianDist(Lat_p)
+		#Newton 's method
+		A0 = self.A0
+		A2 = self.A2
+		A4 = self.A4
 
-			if M >= Mp:
-				Lat_max = Lat_p
-			else:
-				Lat_min = Lat_p
+		Lat_p = (Lat_max + Lat_min) / 2
+		f = 1.1
+    
+		while abs(f) > accuracy:
+			f = Mp - self.MeridianDist(Lat_p)
+			f_d1 = -a * (A0 - A2 * 2 * cos(2 * Lat_p) + A4 * 4 * cos(4 * Lat_p))
+			Lat_p = Lat_p - (f / f_d1)
 
 		
 		t_p = tan(Lat_p)
